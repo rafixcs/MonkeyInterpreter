@@ -8,13 +8,16 @@ import (
 var traceLevel int = 0
 
 const traceIdentPlaceholder string = "\t"
+const debug = false
 
 func identLevel() string {
 	return strings.Repeat(traceIdentPlaceholder, traceLevel-1)
 }
 
 func tracePrint(fs string) {
-	fmt.Printf("%s%s\n", identLevel(), fs)
+	if debug {
+		fmt.Printf("%s%s\n", identLevel(), fs)
+	}
 }
 
 func incIdent() { traceLevel = traceLevel + 1 }
