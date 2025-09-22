@@ -5,11 +5,13 @@ import (
 	"fmt"
 	"io"
 
+	"github.com/rafixcs/monkey-interpreter/src/evaluator"
 	"github.com/rafixcs/monkey-interpreter/src/lexer"
 	"github.com/rafixcs/monkey-interpreter/src/parser"
 )
 
-const MONKEY_FACE = `            __,__
+const MONKEY_FACE = `
+            __,__
    .--.  .-"     "-.  .--.
   / .. \/  .-. .-.  \/ .. \
  | |  '|  /   Y   \  |'  | |
@@ -23,6 +25,7 @@ const MONKEY_FACE = `            __,__
 `
 
 const PROMPT = ">>"
+const DEBUG = false
 
 func Start(in io.Reader, out io.Writer) {
 	scanner := bufio.NewScanner(in)
@@ -41,10 +44,20 @@ func Start(in io.Reader, out io.Writer) {
 		program := p.ParseProgram()
 		if len(p.Errors()) != 0 {
 			printParserErrors(out, p.Errors())
+			continue
 		}
 
-		io.WriteString(out, program.String())
-		io.WriteString(out, "\n")
+		evaluated := evaluator.Eval(program)
+		if evaluated != nil {
+			io.WriteString(out, evaluated.Inspect())
+			io.WriteString(out, "\n")
+		}
+
+		if DEBUG {
+			io.WriteString(out, "DEBUG AST: ")
+			io.WriteString(out, program.String())
+			io.WriteString(out, "\n")
+		}
 
 		/*for tok := l.NextToken(); tok.Type != token.EOF; tok = l.NextToken() {
 			fmt.Printf("%+v\n", tok)
