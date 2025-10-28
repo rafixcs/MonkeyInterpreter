@@ -7,6 +7,7 @@ import (
 
 	"github.com/rafixcs/monkey-interpreter/src/evaluator"
 	"github.com/rafixcs/monkey-interpreter/src/lexer"
+	"github.com/rafixcs/monkey-interpreter/src/object"
 	"github.com/rafixcs/monkey-interpreter/src/parser"
 )
 
@@ -29,6 +30,7 @@ const DEBUG = false
 
 func Start(in io.Reader, out io.Writer) {
 	scanner := bufio.NewScanner(in)
+	env := object.NewEnviroment()
 
 	for {
 		fmt.Print(PROMPT)
@@ -47,7 +49,7 @@ func Start(in io.Reader, out io.Writer) {
 			continue
 		}
 
-		evaluated := evaluator.Eval(program)
+		evaluated := evaluator.Eval(program, env)
 		if evaluated != nil {
 			io.WriteString(out, evaluated.Inspect())
 			io.WriteString(out, "\n")
